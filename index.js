@@ -12,21 +12,16 @@ app.get('/', (req, res) => {
     res.send('👋 🌍')
 })
 
-app.get('/test', (req, res) => {
-    gwotd()
-    res.send('ok')
-})
-
 app.listen(config('PORT'), err => {
     if (err) throw err
     console.log(`Arctic Bot lives on port ${config('PORT')}`)
 })
 
 setInterval(function() {
-    axios("http://planet-express-bot.herokuapp.com");
+    axios("http://arctic-b0t.herokuapp.com");
 }, 300000); // every 5 minutes (300000)
 
-const gwotd = async () => {
+const gwotd = new CronJob('00 30 08 * * 1-5', async () => {
     const response = await axios.get('https://www.germanpod101.com/german-phrases/')
     const $ = cheerio.load(response.data)
     
@@ -37,4 +32,4 @@ const gwotd = async () => {
     console.log(msg)
 
     // slack.send({text: msg})
-}
+}, null, true, 'Europe/London')
