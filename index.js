@@ -1,4 +1,5 @@
 const express = require('express')
+const bodyParser = require('body-parser')
 const config = require('./config')
 const axios = require('axios')
 const Slack = require('node-slack')
@@ -7,9 +8,17 @@ const cheerio = require('cheerio')
 const CronJob = require('cron').CronJob
 
 const app = express()
+app.use(bodyParser.json())
 
 app.get('/', (req, res) => {
     res.send('👋 🌍')
+})
+
+app.post('/message', (req, res) => {
+    const message = req.body.message
+    console.log(`Sending: ${message}`)
+    slack.send({text: message})
+    res.send('OK')
 })
 
 app.listen(config('PORT'), err => {
@@ -31,5 +40,5 @@ const gwotd = new CronJob('00 30 08 * * 1-5', async () => {
     const msg = `Today's German :flag-de: Word of the Day: ${word} - ${translation}`
     console.log(msg)
 
-    // slack.send({text: msg})
+    slack.send({text: msg})
 }, null, true, 'Europe/London')
