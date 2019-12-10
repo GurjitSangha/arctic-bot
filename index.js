@@ -12,6 +12,11 @@ app.get('/', (req, res) => {
     res.send('👋 🌍')
 })
 
+app.get('/test', (req, res) => {
+    gwotd()
+    res.send('ok')
+})
+
 app.listen(config('PORT'), err => {
     if (err) throw err
     console.log(`Arctic Bot lives on port ${config('PORT')}`)
