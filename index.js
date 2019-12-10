@@ -17,6 +17,10 @@ app.listen(config('PORT'), err => {
     console.log(`Arctic Bot lives on port ${config('PORT')}`)
 })
 
+setInterval(function() {
+    axios("http://planet-express-bot.herokuapp.com");
+}, 300000); // every 5 minutes (300000)
+
 const gwotd = async () => {
     const response = await axios.get('https://www.germanpod101.com/german-phrases/')
     const $ = cheerio.load(response.data)
