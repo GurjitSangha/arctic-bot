@@ -12,6 +12,7 @@
     "axios": "^0.19.0",
     "cheerio": "^1.0.0-rc.3",
     "cron": "^1.7.2",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "node-slack": "0.0.7"
   }
