@@ -21,10 +21,10 @@ app.post('/message', (req, res) => {
     res.send('OK')
 })
 
-// app.listen(config('PORT'), err => {
-//     if (err) throw err
-//     console.log(`Arctic Bot lives on port ${config('PORT')}`)
-// })
+app.listen(config('PORT'), err => {
+    if (err) throw err
+    console.log(`Arctic Bot lives on port ${config('PORT')}`)
+})
 
 setInterval(function() {
     axios("http://arctic-b0t.herokuapp.com");
@@ -47,6 +47,5 @@ const gwotd = async () => {
 
     slack.send({text: msg})
 }
-gwotd()
 
 const gwotdJob = new CronJob('00 30 08 * * 1-5', gwotd, null, true, 'Europe/London')
