@@ -48,5 +48,9 @@ const gwotd = async () => {
 
     slack.send({text: msg})
 }
-
 const gwotdJob = new CronJob('00 30 08 * * 1-5', gwotd, null, true, 'Europe/London')
+
+const friday = () => {
+    slack.send({text: 'Happy Friday! https://www.youtube.com/watch?v=kfVsfOSbJY0'});
+}
+const fridayJob = new CronJob('00 00 09 * * 5', friday, null, true, 'Europe/London');
