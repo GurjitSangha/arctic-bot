@@ -6,8 +6,9 @@ const bot = controller.spawn({
 })
 
 bot.startRTM((err, bot, payload) => {
-    if (err)
+    if (err) {
         throw new Error('Could not connect to slack')
+    }
 
     controller.hears(['echo'], ['direct_mention'], (bot, message) => {
         var split = message.text.split(' ');
