@@ -89,7 +89,8 @@ const weeklyShade = async () => {
         slack.send({text: msg})
     }
 
-    const putResponse = await axios.put(config('JSON_BIN_URL'), {scores: {}, shades: []})
+    const putResponse = await axios.put(config('JSON_BIN_URL'), {scores: {}, shaders: []})
+    slack.send({text: 'Shade tally reset'})
 
 }
 const weeklyShaderJob = new CronJob('00 00 15 * * 5', weeklyShade, null, true, 'Europe/London')

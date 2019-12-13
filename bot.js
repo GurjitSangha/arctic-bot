@@ -60,38 +60,49 @@ bot.startRTM((err, bot, payload) => {
         const shader = await getUserNameById(message.user)
         const split = message.text.split(' ')
         split.shift()
-        split.forEach(async userStr => {
-            const userId = userStr.substring(2, userStr.length - 1)
-            const slackUrl = `https://slack.com/api/users.info?token=${config('SLACK_TOKEN')}&user=${userId}`
-            const slackResponse = await axios.get(slackUrl)
-            const name = slackResponse.data.user.real_name
-            console.log(`New shade point for ${name} from ${shader}!`)
-        
-            const getResponse = await axios.get(config('JSON_BIN_URL'))
-            const data = getResponse.data
-            console.log(data)
-            console.log('============')
-        
-            if (data.shaders.includes(shader)) {
-                const msg = `${shader} already cast shade today!`
-                console.log(msg)
-                bot.reply(message, msg)
+        const userStr = split[0]
+        const userId = userStr.substring(2, userStr.length - 1)
+        const slackUrl = `https://slack.com/api/users.info?token=${config('SLACK_TOKEN')}&user=${userId}`
+        const slackResponse = await axios.get(slackUrl)
+        const name = slackResponse.data.user.real_name
+        console.log(`New shade point for ${name} from ${shader}!`)
+    
+        const getResponse = await axios.get(config('JSON_BIN_URL'))
+        const data = getResponse.data
+        console.log(data)
+        console.log('============')
+    
+        if (data.shaders.includes(shader)) {
+            const msg = `${shader} already cast shade today!`
+            console.log(msg)
+            bot.reply(message, msg)
+        } else {
+            data.shaders.push(shader)
+            if (name in data.scores) {
+                data.scores[name] = data.scores[name] + 1
             } else {
-                data.shaders.push(shader)
-                if (name in data.scores) {
-                    data.scores[name] = data.scores[name] + 1
-                } else {
-                    data.scores[name] = 1
-                }
-                console.log(data)
-                
-                const putResponse = await axios.put(config('JSON_BIN_URL'), data)
-                if (putResponse.data) {
-                    console.log('JSON updated!')
-                    const msg = `New shade point for ${name} from ${shader}! Their total is now ${data.scores[name]}`
-                    bot.reply(message, msg)
-                }
+                data.scores[name] = 1
             }
-        })
+            console.log(data)
+            
+            const putResponse = await axios.put(config('JSON_BIN_URL'), data)
+            if (putResponse.data) {
+                console.log('JSON updated!')
+                const msg = `New shade point for ${name} from ${shader}! Their total is now ${data.scores[name]}`
+                bot.reply(message, msg)
+            }
+        }
+    })
+
+    controller.hears(['shadetotal!'], ['direct_mention'], async (bot, message) => {
+        const response = await axios.get(config('JSON_BIN_URL'))
+        console.log(response.data.scores)
+        const msg = ['Current shade tally:']
+        for (let [name, score] of Object.entries(response.data.scores)) {
+            msg.push(`${name}: ${score}\n`)
+        }
+        
+        console.log(msg.join('\n'))
+        bot.reply(message, msg.join('\n'))
     })
 })
