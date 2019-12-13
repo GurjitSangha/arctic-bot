@@ -39,11 +39,13 @@ const gwotd = async () => {
     const translation = $('.r101-wotd-widget__english').first().text().trim()
     const wordmp3 = $('.r101-wotd-widget__audio').first().attr('data-audio')
 
+    const image = $('.r101-wotd-widget__image').first().attr('src')
+
     const sentence = $('.r101-wotd-widget__word').eq(1).text().trim()
     const sentTrans = $('.r101-wotd-widget__english').eq(1).text().trim()
     const sentmp3 = $('.r101-wotd-widget__audio').eq(1).attr('data-audio')
 
-    const msg = `Today's German :flag-de: Word of the Day:\n<${wordmp3}|${word}> - ${translation}\n<${sentmp3}|${sentence}> - ${sentTrans}`
+    const msg = `Today's German :flag-de: Word of the Day:\n<${wordmp3}|${word}> - ${translation}\n${image}\n<${sentmp3}|${sentence}> - ${sentTrans}`
     console.log(msg)
 
     slack.send({text: msg})
