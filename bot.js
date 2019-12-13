@@ -11,6 +11,7 @@ bot.startRTM((err, bot, payload) => {
     }
 
     controller.hears(['echo'], ['direct_mention'], (bot, message) => {
+        console.log(`echo received: ${message}`)
         var split = message.text.split(' ');
         // remove 'echo' and join the remaining elements
         split.shift();
@@ -18,6 +19,7 @@ bot.startRTM((err, bot, payload) => {
     })
 
     controller.hears(['8ball!'], ['ambient'], function(bot, message) {
+        console.log(`8ball Received: ${message}`)
         var answers = [
           'It is certain',
           'It is decidedly so',
@@ -44,5 +46,5 @@ bot.startRTM((err, bot, payload) => {
         var answer = answers[Math.floor(Math.random() * answers.length)];
     
         bot.reply(message, answer);
-      });
+    });
 })
