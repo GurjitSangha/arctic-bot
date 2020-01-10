@@ -7,7 +7,7 @@ const slack = new Slack(config('WEBHOOK_URL'))
 const cheerio = require('cheerio')
 const CronJob = require('cron').CronJob
 const xml2js = require('xml2js')
-// const bot = require('./bot')
+const bot = require('./bot')
 
 const app = express()
 app.use(bodyParser.json())
