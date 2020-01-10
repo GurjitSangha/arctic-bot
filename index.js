@@ -29,7 +29,7 @@ app.listen(config('PORT'), err => {
 })
 
 setInterval(function() {
-    axios("http://arctic-b0t.herokuapp.com");
+    axios('http://arctic-b0t.herokuapp.com');
 }, 300000); // every 5 minutes (300000)
 
 const gwotd = async () => {
