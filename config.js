@@ -8,7 +8,8 @@ var config = {
     PORT: process.env.PORT,
     WEBHOOK_URL: process.env.WEBHOOK_URL,
     SLACK_TOKEN: process.env.SLACK_TOKEN,
-    JSON_BIN_URL: process.env.JSON_BIN_URL
+    JSON_BIN_URL: process.env.JSON_BIN_URL,
+    GWOTD_URL: process.env.GWOTD_URL
 }
 
 module.exports = (key) => {

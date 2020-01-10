@@ -6,7 +6,8 @@ const Slack = require('node-slack')
 const slack = new Slack(config('WEBHOOK_URL'))
 const cheerio = require('cheerio')
 const CronJob = require('cron').CronJob
-const bot = require('./bot')
+const xml2js = require('xml2js')
+// const bot = require('./bot')
 
 const app = express()
 app.use(bodyParser.json())
@@ -32,22 +33,11 @@ setInterval(function() {
 }, 300000); // every 5 minutes (300000)
 
 const gwotd = async () => {
-    const response = await axios.get('https://www.germanpod101.com/german-phrases/')
-    const $ = cheerio.load(response.data)
-    
-    const word = $('.r101-wotd-widget__word').first().text().trim()
-    const translation = $('.r101-wotd-widget__english').first().text().trim()
-    const wordmp3 = $('.r101-wotd-widget__audio').first().attr('data-audio')
-
-    const image = $('.r101-wotd-widget__image').first().attr('src')
-
-    const sentence = $('.r101-wotd-widget__word').eq(1).text().trim()
-    const sentTrans = $('.r101-wotd-widget__english').eq(1).text().trim()
-    const sentmp3 = $('.r101-wotd-widget__audio').eq(1).attr('data-audio')
-
-    const msg = `Today's German :flag-de: Word of the Day:\n<${wordmp3}|${word}> - ${translation}\n${image}\n<${sentmp3}|${sentence}> - ${sentTrans}`
+    const response = await axios.get(config('GWOTD_URL'))
+    parsed = await xml2js.parseStringPromise(response.data)
+    data = parsed.xml.words[0]
+    const msg = `Today's German :flag-de: Word of the Day:\n<${data.wordsound}|${data.word}> - ${data.translation}\n<${data.phrasesound}|${data.fnphrase}> - ${data.enphrase}`
     console.log(msg)
-
     slack.send({text: msg})
 }
 const gwotdJob = new CronJob('00 30 08 * * 1-5', gwotd, null, true, 'Europe/London')
