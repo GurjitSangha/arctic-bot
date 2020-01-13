@@ -26,7 +26,7 @@ bot.startRTM((err, bot, payload) => {
         bot.reply(message, split.join(' '))
     })
 
-    controller.hears(['8ball!'], ['ambient'], function(bot, message) {
+    controller.hears(['8ball!'], ['ambient', 'direct_mention'], function(bot, message) {
         console.log(`8ball Received: ${message.text}`)
         var answers = [
           'It is certain',
