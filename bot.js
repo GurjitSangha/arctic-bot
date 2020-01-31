@@ -2,7 +2,8 @@ const Botkit = require('botkit')
 const controller = Botkit.slackbot()
 const config = require('./config')
 const bot = controller.spawn({
-    token: config('SLACK_TOKEN')
+    token: config('SLACK_TOKEN'),
+    retry: true
 })
 const axios = require('axios')
 
