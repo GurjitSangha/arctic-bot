@@ -57,15 +57,28 @@ bot.startRTM((err, bot, payload) => {
         bot.reply(message, answer)
     });
 
+    controller.hears(['insult!'], ['ambient'], async (bot, message) => {
+        const split = message.text.split(' ');
+        split.shift();
+        const userStr = split[0];
+        const userId = userStr.substring(2, userStr.length - 1)
+        const name = await getUserNameById(userId)
+        console.log(`New insult for ${name}`)
+
+        const response = await axios.get('http://quandyfactory.com/insult/json')
+        const insult = response.data.insult
+        const msg = `${name}, ${insult.charAt(0).toLowerCase()}${insult.slice(1)}`
+        console.log(msg)
+        bot.reply(message, msg)
+    });
+
     controller.hears(['shade!'], ['direct_mention'], async (bot, message) => {
-        const shader = await getUserNameById(message.user)
         const split = message.text.split(' ')
         split.shift()
         const userStr = split[0]
         const userId = userStr.substring(2, userStr.length - 1)
-        const slackUrl = `https://slack.com/api/users.info?token=${config('SLACK_TOKEN')}&user=${userId}`
-        const slackResponse = await axios.get(slackUrl)
-        const name = slackResponse.data.user.real_name
+        const name = await getUserNameById(userId)
+        const shader = await getUserNameById(message.user)
         console.log(`New shade point for ${name} from ${shader}!`)
     
         const getResponse = await axios.get(config('JSON_BIN_URL'))
