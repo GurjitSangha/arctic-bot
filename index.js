@@ -48,6 +48,17 @@ const friday = () => {
 }
 const fridayJob = new CronJob('00 00 09 * * 5', friday, null, true, 'Europe/London');
 
+const video = () => {
+    const videos = [
+        'https://www.youtube.com/watch?v=PcRyjkYdDxM',
+        'https://www.youtube.com/watch?v=_VVmPYx4VDs',
+        'https://www.youtube.com/watch?v=Ppm5_AGtbTo',
+        'https://www.youtube.com/watch?v=p_E2fVH152U',
+    ];
+    slack.send({text: `This week's :flag-de: video of the week is: ${videos[Math.floor(Math.random() * videos.length)]} :flag-de:`});
+}
+const videoJob = new CronJob('00 00 09 * * 3', video, null, true, 'Europe/London');
+
 const resetShaders = async () => {
     const getResponse = await axios.get(config('JSON_BIN_URL'))
     console.log(getResponse.data)
@@ -85,3 +96,13 @@ const weeklyShade = async () => {
 
 }
 const weeklyShaderJob = new CronJob('00 00 15 * * 5', weeklyShade, null, true, 'Europe/London')
+
+// const nocontext = async () => {
+//     const response = await axios.get('https://arctic-2f73.restdb.io/rest/context', {
+//         headers: {
+//             'x-apikey': '4358550b9412fb41d560cc76365a20c2f4530'
+//         }
+//     })
+//     console.log(response.data)
+// }
+// nocontext();
