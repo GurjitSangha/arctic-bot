@@ -7,7 +7,9 @@ const slack = new Slack(config('WEBHOOK_URL'))
 const cheerio = require('cheerio')
 const CronJob = require('cron').CronJob
 const xml2js = require('xml2js')
-const bot = require('./bot')
+// const bot = require('./bot')
+const MongoClient = require('mongodb').MongoClient
+const assert = require('assert')
 
 const app = express()
 app.use(bodyParser.json())
@@ -48,16 +50,31 @@ const friday = () => {
 }
 const fridayJob = new CronJob('00 00 09 * * 5', friday, null, true, 'Europe/London');
 
-const video = () => {
-    const videos = [
-        'https://www.youtube.com/watch?v=PcRyjkYdDxM',
-        'https://www.youtube.com/watch?v=_VVmPYx4VDs',
-        'https://www.youtube.com/watch?v=Ppm5_AGtbTo',
-        'https://www.youtube.com/watch?v=p_E2fVH152U',
-    ];
-    slack.send({text: `This week's :flag-de: video of the week is: ${videos[Math.floor(Math.random() * videos.length)]} :flag-de:`});
+const weeklyVideo = async () => {
+    const client = await MongoClient.connect(config('MONGO_STRING'), {
+        useNewUrlParser: true, 
+        useUnifiedTopology: true,
+    });
+    const db = client.db(config('MONGO_DB_NAME'))
+    const videos = await db.collection('video').find({ sent: false }).toArray()
+    console.log(videos)
+    
+    if (videos.length > 0) {
+        const index = Math.floor(Math.random() * videos.length)
+        const video = videos[index]
+        const msg = `This week's :flag-de: video of the week is: ${video.url} :flag-de:`
+        console.log(msg)
+        slack.send({ text: msg })
+        
+        await db.collection('video').updateOne({ name: video.name}, { $set: { sent: true }})
+    }
+
+    if (videos.length === 1) {  // That was the last unsent video, so reset
+        await db.collection('video').updateMany({}, { $set: { sent: false }})
+    }
+    client.close()
 }
-const videoJob = new CronJob('00 00 09 * * 3', video, null, true, 'Europe/London');
+const weeklyVideoJob = new CronJob('00 00 09 * * 3', weeklyVideo, null, true, 'Europe/London');
 
 const resetShaders = async () => {
     const getResponse = await axios.get(config('JSON_BIN_URL'))
@@ -96,13 +113,3 @@ const weeklyShade = async () => {
 
 }
 const weeklyShaderJob = new CronJob('00 00 15 * * 5', weeklyShade, null, true, 'Europe/London')
-
-// const nocontext = async () => {
-//     const response = await axios.get('https://arctic-2f73.restdb.io/rest/context', {
-//         headers: {
-//             'x-apikey': '4358550b9412fb41d560cc76365a20c2f4530'
-//         }
-//     })
-//     console.log(response.data)
-// }
-// nocontext();
