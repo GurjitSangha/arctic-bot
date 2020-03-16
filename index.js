@@ -76,40 +76,40 @@ const weeklyVideo = async () => {
 }
 const weeklyVideoJob = new CronJob('00 00 09 * * 3', weeklyVideo, null, true, 'Europe/London');
 
-const resetShaders = async () => {
-    const getResponse = await axios.get(config('JSON_BIN_URL'))
-    console.log(getResponse.data)
-    const putResponse = await axios.put(config('JSON_BIN_URL'), {
-        scores: getResponse.data.scores,
-        shaders: []
-    })
-    console.log(putResponse.data)
-}
-const resetShadersJob = new CronJob('00 00 00 * * *', resetShaders, null, true, 'Europe/London')
+// const resetShaders = async () => {
+//     const getResponse = await axios.get(config('JSON_BIN_URL'))
+//     console.log(getResponse.data)
+//     const putResponse = await axios.put(config('JSON_BIN_URL'), {
+//         scores: getResponse.data.scores,
+//         shaders: []
+//     })
+//     console.log(putResponse.data)
+// }
+// const resetShadersJob = new CronJob('00 00 00 * * *', resetShaders, null, true, 'Europe/London')
 
-const weeklyShade = async () => {
-    const getResponse = await axios.get(config('JSON_BIN_URL'))
-    const scores = getResponse.data.scores
-    let max = -1
-    let shadiest = 'No-one'
-    for (let [name, score] of Object.entries(scores)) {
-        if (score > max) {
-            max = score
-            shadiest = name
-        }
-    }
-    if (max > -1) {
-        const msg = `With a score of ${max}, the shadiest person of the week is ${shadiest}!`
-        console.log(msg)
-        slack.send({text: msg})
-    } else {
-        const msg = 'No shade points recorded this week!'
-        console.log(msg)
-        slack.send({text: msg})
-    }
+// const weeklyShade = async () => {
+//     const getResponse = await axios.get(config('JSON_BIN_URL'))
+//     const scores = getResponse.data.scores
+//     let max = -1
+//     let shadiest = 'No-one'
+//     for (let [name, score] of Object.entries(scores)) {
+//         if (score > max) {
+//             max = score
+//             shadiest = name
+//         }
+//     }
+//     if (max > -1) {
+//         const msg = `With a score of ${max}, the shadiest person of the week is ${shadiest}!`
+//         console.log(msg)
+//         slack.send({text: msg})
+//     } else {
+//         const msg = 'No shade points recorded this week!'
+//         console.log(msg)
+//         slack.send({text: msg})
+//     }
 
-    const putResponse = await axios.put(config('JSON_BIN_URL'), {scores: {}, shaders: []})
-    slack.send({text: 'Shade tally reset'})
+//     const putResponse = await axios.put(config('JSON_BIN_URL'), {scores: {}, shaders: []})
+//     slack.send({text: 'Shade tally reset'})
 
-}
-const weeklyShaderJob = new CronJob('00 00 15 * * 5', weeklyShade, null, true, 'Europe/London')
+// }
+// const weeklyShaderJob = new CronJob('00 00 15 * * 5', weeklyShade, null, true, 'Europe/London')

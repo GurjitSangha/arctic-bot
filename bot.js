@@ -72,51 +72,51 @@ bot.startRTM((err, bot, payload) => {
         bot.reply(message, msg)
     });
 
-    controller.hears(['shade!'], ['direct_mention'], async (bot, message) => {
-        const split = message.text.split(' ')
-        split.shift()
-        const userStr = split[0]
-        const userId = userStr.substring(2, userStr.length - 1)
-        const name = await getUserNameById(userId)
-        const shader = await getUserNameById(message.user)
-        console.log(`New shade point for ${name} from ${shader}!`)
+    // controller.hears(['shade!'], ['direct_mention'], async (bot, message) => {
+    //     const split = message.text.split(' ')
+    //     split.shift()
+    //     const userStr = split[0]
+    //     const userId = userStr.substring(2, userStr.length - 1)
+    //     const name = await getUserNameById(userId)
+    //     const shader = await getUserNameById(message.user)
+    //     console.log(`New shade point for ${name} from ${shader}!`)
     
-        const getResponse = await axios.get(config('JSON_BIN_URL'))
-        const data = getResponse.data
-        console.log(data)
-        console.log('============')
+    //     const getResponse = await axios.get(config('JSON_BIN_URL'))
+    //     const data = getResponse.data
+    //     console.log(data)
+    //     console.log('============')
     
-        if (data.shaders.includes(shader)) {
-            const msg = `${shader} already cast shade today!`
-            console.log(msg)
-            bot.reply(message, msg)
-        } else {
-            data.shaders.push(shader)
-            if (name in data.scores) {
-                data.scores[name] = data.scores[name] + 1
-            } else {
-                data.scores[name] = 1
-            }
-            console.log(data)
+    //     if (data.shaders.includes(shader)) {
+    //         const msg = `${shader} already cast shade today!`
+    //         console.log(msg)
+    //         bot.reply(message, msg)
+    //     } else {
+    //         data.shaders.push(shader)
+    //         if (name in data.scores) {
+    //             data.scores[name] = data.scores[name] + 1
+    //         } else {
+    //             data.scores[name] = 1
+    //         }
+    //         console.log(data)
             
-            const putResponse = await axios.put(config('JSON_BIN_URL'), data)
-            if (putResponse.data) {
-                console.log('JSON updated!')
-                const msg = `New shade point for ${name} from ${shader}! Their total is now ${data.scores[name]}`
-                bot.reply(message, msg)
-            }
-        }
-    })
+    //         const putResponse = await axios.put(config('JSON_BIN_URL'), data)
+    //         if (putResponse.data) {
+    //             console.log('JSON updated!')
+    //             const msg = `New shade point for ${name} from ${shader}! Their total is now ${data.scores[name]}`
+    //             bot.reply(message, msg)
+    //         }
+    //     }
+    // })
 
-    controller.hears(['shadetotal!'], ['direct_mention'], async (bot, message) => {
-        const response = await axios.get(config('JSON_BIN_URL'))
-        console.log(response.data.scores)
-        const msg = ['Current shade tally:']
-        for (let [name, score] of Object.entries(response.data.scores)) {
-            msg.push(`${name}: ${score}\n`)
-        }
+    // controller.hears(['shadetotal!'], ['direct_mention'], async (bot, message) => {
+    //     const response = await axios.get(config('JSON_BIN_URL'))
+    //     console.log(response.data.scores)
+    //     const msg = ['Current shade tally:']
+    //     for (let [name, score] of Object.entries(response.data.scores)) {
+    //         msg.push(`${name}: ${score}\n`)
+    //     }
         
-        console.log(msg.join('\n'))
-        bot.reply(message, msg.join('\n'))
-    })
+    //     console.log(msg.join('\n'))
+    //     bot.reply(message, msg.join('\n'))
+    // })
 })
