@@ -48,7 +48,7 @@ const friday = () => {
 }
 const fridayJob = new CronJob('00 00 09 * * 5', friday, null, true, 'Europe/London');
 
-const weeklyVideo = async () => {
+const video = async () => {
     const client = await MongoClient.connect(config('MONGO_STRING'), {
         useNewUrlParser: true, 
         useUnifiedTopology: true,
@@ -60,7 +60,7 @@ const weeklyVideo = async () => {
     if (videos.length > 0) {
         const index = Math.floor(Math.random() * videos.length)
         const video = videos[index]
-        const msg = `This week's :flag-de: video of the week is: ${video.url} :flag-de:`
+        const msg = `Today's :flag-de: video is: ${video.name}! ${video.url} :flag-de:`
         console.log(msg)
         slack.send({ text: msg })
         
@@ -72,7 +72,7 @@ const weeklyVideo = async () => {
     }
     client.close()
 }
-const weeklyVideoJob = new CronJob('00 30 14 * * 3', weeklyVideo, null, true, 'Europe/London');
+const videoJob = new CronJob('00 30 14 * * 1,3,5', weeklyVideo, null, true, 'Europe/London');
 
 // const resetShaders = async () => {
 //     const getResponse = await axios.get(config('JSON_BIN_URL'))
