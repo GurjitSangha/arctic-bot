@@ -72,7 +72,7 @@ const video = async () => {
     }
     client.close()
 }
-const videoJob = new CronJob('00 30 14 * * 1,3,5', weeklyVideo, null, true, 'Europe/London');
+const videoJob = new CronJob('00 30 14 * * 1,3,5', video, null, true, 'Europe/London');
 
 // const resetShaders = async () => {
 //     const getResponse = await axios.get(config('JSON_BIN_URL'))
