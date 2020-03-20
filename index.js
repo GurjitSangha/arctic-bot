@@ -74,6 +74,31 @@ const video = async () => {
 }
 const videoJob = new CronJob('00 30 14 * * 1,3,5', video, null, true, 'Europe/London');
 
+const react = async emoji => {
+    console.log(`Attempting to react to last message with ${emoji}`)
+    const lastMessageUrl = `https://slack.com/api/conversations.history?token=${config('SLACK_TOKEN')}&channel=${config('SLACK_CHANNEL_ID')}&limit=1`
+    const lmResponse = await axios.get(lastMessageUrl)
+    const timestamp = lmResponse.data.messages[0].ts
+
+    if (!timestamp) {
+        console.log('Could not get last message timestamp')
+        return
+    }
+
+    const reactUrl = `https://slack.com/api/reactions.add?token=${config('SLACK_TOKEN')}&channel=${config('SLACK_CHANNEL_ID')}&name=${emoji}&timestamp=${timestamp}`
+    const reactResponse = await axios.get(reactUrl);
+    if (reactResponse.data.ok) {
+        console.log('Success!')
+    } else {
+        console.log('Error!')
+        console.log(reactResponse.data)
+    }
+}
+app.post('/react', (req, res) => {
+    react(req.body.emoji)
+    res.send('OK')
+})
+
 // const resetShaders = async () => {
 //     const getResponse = await axios.get(config('JSON_BIN_URL'))
 //     console.log(getResponse.data)

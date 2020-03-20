@@ -11,7 +11,8 @@ var config = {
     JSON_BIN_URL: process.env.JSON_BIN_URL,
     GWOTD_URL: process.env.GWOTD_URL,
     MONGO_STRING: process.env.MONGO_STRING,
-    MONGO_DB_NAME: process.env.MONGO_DB_NAME
+    MONGO_DB_NAME: process.env.MONGO_DB_NAME,
+    SLACK_CHANNEL_ID: process.env.SLACK_CHANNEL_ID
 }
 
 module.exports = (key) => {
