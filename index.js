@@ -33,6 +33,11 @@ setInterval(function() {
     axios('http://arctic-b0t.herokuapp.com');
 }, 300000); // every 5 minutes (300000)
 
+const social = () => {
+    slack.send({text: 'Social slack call anyone?'})
+}
+const socialJob = new CronJob('00 00 09 * * 1-5', social, null, true, 'Europe/London')
+
 const gwotd = async () => {
     const response = await axios.get(config('GWOTD_URL'))
     parsed = await xml2js.parseStringPromise(response.data)
@@ -46,7 +51,7 @@ const gwotdJob = new CronJob('00 30 08 * * 1-5', gwotd, null, true, 'Europe/Lond
 const friday = () => {
     slack.send({text: 'Happy Friday! https://www.youtube.com/watch?v=kfVsfOSbJY0'});
 }
-const fridayJob = new CronJob('00 00 09 * * 5', friday, null, true, 'Europe/London');
+const fridayJob = new CronJob('00 00 08 * * 5', friday, null, true, 'Europe/London');
 
 const video = async () => {
     const client = await MongoClient.connect(config('MONGO_STRING'), {
