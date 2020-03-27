@@ -77,7 +77,7 @@ const video = async () => {
     }
     client.close()
 }
-const videoJob = new CronJob('00 30 14 * * 1,3,5', video, null, true, 'Europe/London');
+const videoJob = new CronJob('00 30 14 * * 2,4', video, null, true, 'Europe/London');
 
 const react = async emoji => {
     console.log(`Attempting to react to last message with ${emoji}`)
