@@ -65,7 +65,7 @@ const video = async () => {
     if (videos.length > 0) {
         const index = Math.floor(Math.random() * videos.length)
         const video = videos[index]
-        const msg = `Today's :flag-de: video is: ${video.name}! ${video.url} :flag-de:`
+        const msg = `Today's video is: ${video.name}! ${video.url}`
         console.log(msg)
         slack.send({ text: msg })
         
@@ -77,7 +77,7 @@ const video = async () => {
     }
     client.close()
 }
-const videoJob = new CronJob('00 30 14 * * 2,4', video, null, true, 'Europe/London');
+const videoJob = new CronJob('00 30 14 * * 1,3,5', video, null, true, 'Europe/London');
 
 const react = async emoji => {
     console.log(`Attempting to react to last message with ${emoji}`)
@@ -103,6 +103,42 @@ app.post('/react', (req, res) => {
     react(req.body.emoji)
     res.send('OK')
 })
+
+const youtube = async () => {
+    const playlist = await axios.get('http://arctic-json.herokuapp.com')
+    let documents = []
+    playlist.data.forEach(item => {
+        documents.push({
+            name: item.snippet.title, 
+            url: `https://www.youtube.com/watch?v=${item.contentDetails.videoId}`, 
+            sent: false
+        })
+    })
+    console.log('Updating videos...')
+
+    const client = await MongoClient.connect(config('MONGO_STRING'), {
+        useNewUrlParser: true, 
+        useUnifiedTopology: true,
+    });
+    const db = client.db(config('MONGO_DB_NAME'))
+    const videos = db.collection('video')
+    // Get the current list of urls
+    const currDocs = await videos.find({}).project({ url: 1, _id: 0 }).toArray()
+    const urls = currDocs.map(doc => doc.url)
+    // Ignore any documents that have a current url
+    documents = documents.filter(doc => {
+        return !urls.includes(doc.url)
+    })
+    // Insert the remaining documents, if there are any
+    if (documents.length > 0) {
+        console.log('Inserting following into mongo')
+        console.log(documents)
+        videos.insertMany(documents)
+    } else {
+        console.log('No new videos!')
+    }
+}
+const youtubeJob = new CronJob('00 00 14 * * 1,3,5', youtube, null, true, 'Europe/London');
 
 // const resetShaders = async () => {
 //     const getResponse = await axios.get(config('JSON_BIN_URL'))
