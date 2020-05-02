@@ -107,14 +107,17 @@ app.post('/react', (req, res) => {
 const youtube = async () => {
     const playlist = await axios.get('http://arctic-json.herokuapp.com')
     let documents = []
+    let playlistUrls = []
     playlist.data.forEach(item => {
+        const url = `https://www.youtube.com/watch?v=${item.contentDetails.videoId}`
+        playlistUrls.push(url);
         documents.push({
             name: item.snippet.title, 
-            url: `https://www.youtube.com/watch?v=${item.contentDetails.videoId}`, 
+            url, 
             sent: false
         })
     })
-    console.log('Updating videos...')
+    console.log('Syncing videos...')
 
     const client = await MongoClient.connect(config('MONGO_STRING'), {
         useNewUrlParser: true, 
@@ -124,10 +127,10 @@ const youtube = async () => {
     const videos = db.collection('video')
     // Get the current list of urls
     const currDocs = await videos.find({}).project({ url: 1, _id: 0 }).toArray()
-    const urls = currDocs.map(doc => doc.url)
+    const currUrls = currDocs.map(doc => doc.url)
     // Ignore any documents that have a current url
     documents = documents.filter(doc => {
-        return !urls.includes(doc.url)
+        return !currUrls.includes(doc.url)
     })
     // Insert the remaining documents, if there are any
     if (documents.length > 0) {
@@ -137,6 +140,15 @@ const youtube = async () => {
     } else {
         console.log('No new videos!')
     }
+
+    // Get all urls that are in mongo but not in the playlist
+    deletedUrls = currUrls.filter(url => {
+        return !playlistUrls.includes(url)
+    })
+    // Delete the urls from mongo
+    console.log('Deleting urls from mongo:')
+    console.log(deletedUrls)
+    await videos.deleteMany({ url: { $in: deletedUrls }})
 }
 const youtubeJob = new CronJob('00 00 14 * * 1,3,5', youtube, null, true, 'Europe/London');
 
