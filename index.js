@@ -77,7 +77,7 @@ const video = async () => {
     }
     client.close()
 }
-const videoJob = new CronJob('00 30 14 * * 1,3,5', video, null, true, 'Europe/London');
+const videoJob = new CronJob('00 00 12 * * 1-5', video, null, true, 'Europe/London');
 
 const react = async emoji => {
     console.log(`Attempting to react to last message with ${emoji}`)
@@ -150,7 +150,7 @@ const youtube = async () => {
     console.log(deletedUrls)
     await videos.deleteMany({ url: { $in: deletedUrls }})
 }
-const youtubeJob = new CronJob('00 00 14 * * 1,3,5', youtube, null, true, 'Europe/London');
+const youtubeJob = new CronJob('00 30 11 * * 1-5', youtube, null, true, 'Europe/London');
 
 // const resetShaders = async () => {
 //     const getResponse = await axios.get(config('JSON_BIN_URL'))
