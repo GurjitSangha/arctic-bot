@@ -33,11 +33,6 @@ setInterval(function() {
     axios('http://arctic-b0t.herokuapp.com');
 }, 300000); // every 5 minutes (300000)
 
-const social = () => {
-    slack.send({text: 'Social slack call anyone?'})
-}
-const socialJob = new CronJob('00 00 09 * * 1-5', social, null, true, 'Europe/London')
-
 const gwotd = async () => {
     const response = await axios.get(config('GWOTD_URL'))
     parsed = await xml2js.parseStringPromise(response.data)
