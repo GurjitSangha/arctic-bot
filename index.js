@@ -6,7 +6,7 @@ const Slack = require('node-slack')
 const slack = new Slack(config('WEBHOOK_URL'))
 const CronJob = require('cron').CronJob
 const xml2js = require('xml2js')
-// const bot = require('./bot')
+const bot = require('./bot')
 const MongoClient = require('mongodb').MongoClient
 
 const app = express()
