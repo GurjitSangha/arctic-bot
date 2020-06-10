@@ -6,7 +6,7 @@ const Slack = require('node-slack')
 const slack = new Slack(config('WEBHOOK_URL'))
 const CronJob = require('cron').CronJob
 const xml2js = require('xml2js')
-const bot = require('./bot')
+// const bot = require('./bot')
 const MongoClient = require('mongodb').MongoClient
 
 const app = express()
@@ -55,7 +55,7 @@ const video = async () => {
     });
     const db = client.db(config('MONGO_DB_NAME'))
     const videos = await db.collection('video').find({ sent: false }).toArray()
-    console.log(videos)
+    console.log(`${videos.length} unsent videos remaining`)
     
     if (videos.length > 0) {
         const index = Math.floor(Math.random() * videos.length)
@@ -147,6 +147,14 @@ const youtube = async () => {
 }
 const youtubeJob = new CronJob('00 30 11 * * 1-5', youtube, null, true, 'Europe/London');
 
+const fact = async () => {
+    const response = await axios.get('https://uselessfacts.jsph.pl/today.json?language=en')
+    const fact = response.data.text
+    const msg = `Today's fact of the day is : ${fact}`
+    console.log(`Sending fact: ${fact}`)
+    slack.send({ text: msg })
+}
+const factJob = new CronJob('00 00 14 * * 1-5', fact, null, true, 'Europe/London');
 // const resetShaders = async () => {
 //     const getResponse = await axios.get(config('JSON_BIN_URL'))
 //     console.log(getResponse.data)
