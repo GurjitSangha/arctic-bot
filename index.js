@@ -150,7 +150,7 @@ const youtubeJob = new CronJob('00 30 11 * * 1-5', youtube, null, true, 'Europe/
 const fact = async () => {
     const response = await axios.get('https://uselessfacts.jsph.pl/today.json?language=en')
     const fact = response.data.text
-    const msg = `Today's fact of the day is : ${fact}`
+    const msg = `Today's fact of the day is: ${fact}`
     console.log(`Sending fact: ${fact}`)
     slack.send({ text: msg })
 }

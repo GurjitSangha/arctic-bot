@@ -75,7 +75,7 @@ bot.startRTM((err, bot, payload) => {
     controller.hears(['fact!'], ['ambient', 'direct_mention'], async (bot, message) => {
         const response = await axios.get('https://uselessfacts.jsph.pl/random.json?language=en')
         const fact = response.data.text
-        const msg = `Your random fact is : ${fact}`
+        const msg = `Your random fact is: ${fact}`
         console.log(`Sending random fact: ${fact}`)
         bot.reply(message, msg)
     })
