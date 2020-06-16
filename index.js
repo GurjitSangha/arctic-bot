@@ -8,6 +8,7 @@ const CronJob = require('cron').CronJob
 const xml2js = require('xml2js')
 const bot = require('./bot')
 const MongoClient = require('mongodb').MongoClient
+const { google } = require('googleapis')
 
 const app = express()
 app.use(bodyParser.json())
@@ -99,11 +100,40 @@ app.post('/react', (req, res) => {
     res.send('OK')
 })
 
+const getPlaylist = async () => {
+    const service = google.youtube('v3')
+    const { errors = null, data = null } = await service.playlistItems.list({
+            key: config('GOOGLE_API_KEY'),
+            part: 'snippet,contentDetails',
+            playlistId: 'PLZChFt0MRE1toVUzlV5R1gSzUYFD4Wf6E',
+            maxResults: 50
+        }).catch(({ errors }) => {
+            console.log('Error fetching playlist', errors)
+        })
+    const items = data.items
+    if (data.nextPageToken !== null) {
+        let pageToken = data.nextPageToken
+        while (pageToken !== null) {
+            const youtubePageResponse = await service.playlistItems.list({
+                key: config('GOOGLE_API_KEY'),
+                part: 'snippet,contentDetails',
+                playlistId: 'PLZChFt0MRE1toVUzlV5R1gSzUYFD4Wf6E',
+                maxResults: 50,
+                pageToken: pageToken
+            })
+            youtubePageResponse.data.items.forEach(item => items.push(item))
+            pageToken = ('nextPageToken' in youtubePageResponse.data) ? youtubePageResponse.data.nextPageToken : null
+        }
+    }
+    console.log(items.length)
+    return items
+}
+
 const youtube = async () => {
-    const playlist = await axios.get('http://arctic-json.herokuapp.com')
+    const playlist = await getPlaylist()
     let documents = []
     let playlistUrls = []
-    playlist.data.forEach(item => {
+    playlist.forEach(item => {
         const url = `https://www.youtube.com/watch?v=${item.contentDetails.videoId}`
         playlistUrls.push(url);
         documents.push({
@@ -146,6 +176,7 @@ const youtube = async () => {
     await videos.deleteMany({ url: { $in: deletedUrls }})
 }
 const youtubeJob = new CronJob('00 30 11 * * 1-5', youtube, null, true, 'Europe/London');
+youtube()
 
 const fact = async () => {
     const response = await axios.get('https://uselessfacts.jsph.pl/today.json?language=en')
