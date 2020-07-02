@@ -13,7 +13,8 @@ var config = {
     MONGO_STRING: process.env.MONGO_STRING,
     MONGO_DB_NAME: process.env.MONGO_DB_NAME,
     SLACK_CHANNEL_ID: process.env.SLACK_CHANNEL_ID,
-    GOOGLE_API_KEY: process.env.GOOGLE_API_KEY
+    GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,
+    MUNCHEN_WEBHOOK_URL: process.env.MUNCHEN_WEBHOOK_URL,
 }
 
 module.exports = (key) => {

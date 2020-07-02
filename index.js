@@ -4,6 +4,7 @@ const config = require('./config')
 const axios = require('axios')
 const Slack = require('node-slack')
 const slack = new Slack(config('WEBHOOK_URL'))
+const slack2 = new Slack(config('MUNCHEN_WEBHOOK_URL'))
 const CronJob = require('cron').CronJob
 const xml2js = require('xml2js')
 const bot = require('./bot')
@@ -41,6 +42,7 @@ const gwotd = async () => {
     const msg = `Today's German :flag-de: Word of the Day:\n<${data.wordsound}|${data.word}> - ${data.translation}\n<${data.phrasesound}|${data.fnphrase}> - ${data.enphrase}`
     console.log(msg)
     slack.send({text: msg})
+    slack2.send({text: msg})
 }
 const gwotdJob = new CronJob('00 30 08 * * 1-5', gwotd, null, true, 'Europe/London')
 
