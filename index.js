@@ -186,6 +186,7 @@ const fact = async () => {
     const msg = `Today's fact of the day is: ${fact}`
     console.log(`Sending fact: ${fact}`)
     slack.send({ text: msg })
+    slack2.send({ text: msg })
 }
 const factJob = new CronJob('00 00 14 * * 1-5', fact, null, true, 'Europe/London');
 // const resetShaders = async () => {
