@@ -7,9 +7,10 @@ const slack = new Slack(config('WEBHOOK_URL'))
 const slack2 = new Slack(config('MUNCHEN_WEBHOOK_URL'))
 const CronJob = require('cron').CronJob
 const xml2js = require('xml2js')
-const bot = require('./bot')
+// const bot = require('./bot')
 const MongoClient = require('mongodb').MongoClient
 const { google } = require('googleapis')
+const cheerio = require('cheerio')
 
 const app = express()
 app.use(bodyParser.json())
@@ -63,7 +64,7 @@ const video = async () => {
     if (videos.length > 0) {
         const index = Math.floor(Math.random() * videos.length)
         const video = videos[index]
-        const msg = `Today's video is: ${video.name}! ${video.url}`
+        const msg = `Today's video is: ${video.name} ${video.url}`
         console.log(msg)
         slack.send({ text: msg })
         
@@ -178,7 +179,6 @@ const youtube = async () => {
     await videos.deleteMany({ url: { $in: deletedUrls }})
 }
 const youtubeJob = new CronJob('00 30 11 * * 1-5', youtube, null, true, 'Europe/London');
-youtube()
 
 const fact = async () => {
     const response = await axios.get('https://uselessfacts.jsph.pl/today.json?language=en')
@@ -189,6 +189,17 @@ const fact = async () => {
     slack2.send({ text: msg })
 }
 const factJob = new CronJob('00 00 14 * * 1-5', fact, null, true, 'Europe/London');
+
+const devJoke = async () => {
+    const { data } = await axios.get('https://dailydeveloperjokes.github.io/')
+    const $ = cheerio.load(data)
+    const imgs = $('img[alt="Joke Image"]')
+    const src = imgs[0].attribs.src
+    const msg = `Today's dev joke is: ${src}`
+    slack.send({text: msg})
+}
+const devJokeJob = new CronJob('00 00 10 * * 1-5', devJoke, null, true, 'Europe/London');
+
 // const resetShaders = async () => {
 //     const getResponse = await axios.get(config('JSON_BIN_URL'))
 //     console.log(getResponse.data)
